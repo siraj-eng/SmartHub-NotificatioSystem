@@ -14,6 +14,10 @@ namespace SmartHub_NotificatioSystem.Hub
         // Tracks all registered subscribers
         private List<Subscriber> subscribers;
 
+        public event EventHandler<SubscriberEventsArgs> SubscriberAdded;
+        public event EventHandler<SubscriberEventsArgs> SubscriberRemoved;
+        public event EventHandler<NotificationEventArgs> NotificationPublished;
+
         // Constructor
         public NotificationHub()
         {
@@ -31,7 +35,10 @@ namespace SmartHub_NotificatioSystem.Hub
             {
                 subscribers.Add(subscriber);
                 Console.WriteLine($"Subscriber {subscriber.Name} registered successfully.");
-            } 
+
+                SubscriberAdded?.Invoke(this, new SubscriberEventsArgs(subscriber));
+
+            }
         }
         
         //Unscribe method subscriber - With a trigger an event
@@ -41,6 +48,9 @@ namespace SmartHub_NotificatioSystem.Hub
             {
                 subscribers.Remove(subscriber);
                 Console.WriteLine($"Subscriber {subscriber.Name} unregistered successfully.");
+
+                SubscriberRemoved?.Invoke(this, new SubscriberEventsArgs(subscriber));  
+
             }
         }
 

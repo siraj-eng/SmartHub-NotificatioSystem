@@ -41,6 +41,5 @@ namespace SmartHub_NotificatioSystem.Subscribers
             Console.WriteLine($"Notification recieved successfully : {e.NotificationMessage}");
 
         }
-
     }
 }
