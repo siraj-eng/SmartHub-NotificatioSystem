@@ -44,6 +44,19 @@ namespace SmartHub_NotificatioSystem.Hub
             }
         }
 
+        //Placeholder for PublishNotification method - will filter subscribers and send notification
+        public async Task PublishNotification(NotificationEventArgs e)
+        {
+            var relevantSubscribers = subscribers
+                                     .Where(s => s.SubscriptionPreference.Contains(e.NotificationType))
+                                     .ToList();
+
+            foreach (var subscriber in relevantSubscribers) 
+            {
+                await subscriber.RecieveNotifications(e);
+            }
+        }
+
     }
 } 
    
