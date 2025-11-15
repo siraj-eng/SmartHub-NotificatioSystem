@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartHub_NotificatioSystem.Subscribers
 {
-    public class Subscribers
+    public class Subscriber
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,7 +16,7 @@ namespace SmartHub_NotificatioSystem.Subscribers
         public List<string> SubscriptionPreference { get; private set; } = new List<string>();
 
 
-        public Subscribers(int id, string name, string description, string details)
+        public Subscriber(int id, string name, string description, string details)
         {
             Id = id;
             Name = name;
@@ -26,7 +26,7 @@ namespace SmartHub_NotificatioSystem.Subscribers
         }
 
         //Declare the list independently
-        public Subscribers()
+        public Subscriber()
         {
             SubscriptionPreference = new List<string>();
         }
