@@ -1,10 +1,5 @@
 ﻿using SmartHub_NotificatioSystem.Events;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartHub_NotificatioSystem.Publishers
 {
@@ -20,29 +15,29 @@ namespace SmartHub_NotificatioSystem.Publishers
             Name = name;
             Description = description;
         }
-
-        //The main publisher class
-        public class EventPublisher
-        {
-            //Declare the event using EventHandler<T> delegate type
-            public event EventHandler<NotificationEventArgs> NotificationPublished;
-
-            //A method in the publisher that triggers the event
-            public void UpdateNotificationStatus(string notification)
-            {
-                Console.WriteLine($"[Publisher]: Notification has been published with {notification}");
-
-                //Call the safe invocation method
-                NotificationPublished(new  NotificationEventArgs(notification));
-            }
-
-            //Protected virtual method for thread-safe invocation
-            protected virtual void OnPublisherChanged(EventArgs e) 
-            {
-                //using the null conditional operator to invoke only if the subscribers exist
-                NotificationPublished?.Invoke(this, e);
-            }
-        }
     }
 
+    public class EventPublisher
+    {
+        // Declare the event using EventHandler<T>
+        public event EventHandler<NotificationEventArgs> NotificationPublished;
+
+        // Publishes a basic notification
+        public void UpdateNotificationStatus(string notification)
+        {
+            Console.WriteLine($"[Publisher]: Notification has been published with {notification}");
+
+            // Safe event invocation
+            NotificationPublished?.Invoke(
+                this,
+                new NotificationEventArgs(notification)
+            );
+        }
+
+        // Optional override-friendly method
+        protected virtual void OnNotificationPublished(NotificationEventArgs e)
+        {
+            NotificationPublished?.Invoke(this, e);
+        }
+    }
 }
