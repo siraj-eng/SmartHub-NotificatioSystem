@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartHub_NotificatioSystem.Events;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -24,22 +25,22 @@ namespace SmartHub_NotificatioSystem.Publishers
         public class EventPublisher
         {
             //Declare the event using EventHandler<T> delegate type
-            public event EventHandler<EventArgs> PublisherChanged;
+            public event EventHandler<NotificationEventArgs> NotificationPublished;
 
             //A method in the publisher that triggers the event
-            public void UpdateStatus(string message)
+            public void UpdateNotificationStatus(string notification)
             {
-                Console.WriteLine($"[Publisher]: Status of Publisher has changed to...");
+                Console.WriteLine($"[Publisher]: Notification has been published with {notification}");
 
                 //Call the safe invocation method
-                OnPublisherChanged(new EventArgs(message));
+                NotificationPublished(new  NotificationEventArgs(notification));
             }
 
             //Protected virtual method for thread-safe invocation
             protected virtual void OnPublisherChanged(EventArgs e) 
             {
                 //using the null conditional operator to invoke only if the subscribers exist
-                PublisherChanged?.Invoke(this, e);
+                NotificationPublished?.Invoke(this, e);
             }
         }
     }
