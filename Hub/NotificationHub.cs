@@ -68,21 +68,21 @@ namespace SmartHub_NotificatioSystem.Hub
             }
         }
 
-        //Marketing Publisher - Launch Campaign that triggers an event and listens to it
+        // Wire a publisher into the hub
         public void AttachPublisher(MarketingPublisher publisher)
         {
-            //Subscribe to the event here
-            MarketingPublisher.PublishNotification += publisher;
+            //Link publisher event -> hub event handler
+            publisher.MarketingCampaignLaunched += OnMarketingCampaignLaunched;
 
-            var relevantSubscribers = subscribers
-                                     .Where(s => s.SubscriptionPreference.Contains(e.NotificationType))
-                                     .ToList();
+            Console.WriteLine("MarketingPublisher successfully attached to NotificationHub.");
+        }
 
-            foreach (var subscriber in relevantSubscribers)
-            {
-                await subscriber.RecieveNotifications(e);
-            }
+        //This fires when the publisher launches a campaign
+        private async void OnMarketingCampaignLaunched(object sender, NotificationEventArgs e)
+        {
+            Console.WriteLine($"Hub recieved Marketing event: {e.NotificationMessage}");
 
+            await PublishNotification(e);
         }
 
     }
