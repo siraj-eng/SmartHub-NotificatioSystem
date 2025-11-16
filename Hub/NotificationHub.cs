@@ -1,4 +1,5 @@
 ﻿using SmartHub_NotificatioSystem.Events;
+using SmartHub_NotificatioSystem.Publishers;
 using SmartHub_NotificatioSystem.Subscribers;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,23 @@ namespace SmartHub_NotificatioSystem.Hub
             {
                 await subscriber.RecieveNotifications(e);
             }
+        }
+
+        //Marketing Publisher - Launch Campaign that triggers an event and listens to it
+        public void AttachPublisher(MarketingPublisher publisher)
+        {
+            //Subscribe to the event here
+            MarketingPublisher.PublishNotification += publisher;
+
+            var relevantSubscribers = subscribers
+                                     .Where(s => s.SubscriptionPreference.Contains(e.NotificationType))
+                                     .ToList();
+
+            foreach (var subscriber in relevantSubscribers)
+            {
+                await subscriber.RecieveNotifications(e);
+            }
+
         }
 
     }
