@@ -13,7 +13,7 @@ namespace SmartHub_NotificatioSystem.Hub
     {
 
         // Tracks all registered subscribers
-        private List<Subscriber> subscribers;
+        public List<Subscriber> subscribers;
 
         public event EventHandler<SubscriberEventsArgs> SubscriberAdded;
         public event EventHandler<SubscriberEventsArgs> SubscriberRemoved;

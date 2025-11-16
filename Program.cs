@@ -5,6 +5,7 @@ using SmartHub_NotificatioSystem.Events;
 using SmartHub_NotificatioSystem.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SmartHub_NotificatioSystem
@@ -15,6 +16,8 @@ namespace SmartHub_NotificatioSystem
         {
             var hub = new NotificationHub();
             var marketingPublisher = new MarketingPublisher("M001", "MarketingPublisher", "Publishes marketing campaigns");
+
+            // Subscribe hub to marketing events
             marketingPublisher.MarketingCampaignLaunched += async (sender, e) => await hub.PublishNotification(e);
 
             bool running = true;
@@ -35,47 +38,23 @@ namespace SmartHub_NotificatioSystem
                 switch (input)
                 {
                     case "1":
-                        Console.Write("Enter Name: ");
-                        var name = Console.ReadLine();
-                        Console.Write("Enter Description: ");
-                        var desc = Console.ReadLine();
-                        Console.Write("Enter Details: ");
-                        var details = Console.ReadLine();
-                        Console.Write("Enter Subscription Types (comma separated, e.g., System,Marketing): ");
-                        var types = Console.ReadLine()?.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                        var subscriber = new Subscriber(GenerateId(), name, desc, details, new List<string>(types ?? Array.Empty<string>()));
-                        hub.Subscribe(subscriber);
+                        AddSubscriberMenu(hub);
                         break;
 
                     case "2":
-                        Console.Write("Enter Subscriber ID to remove: ");
-                        if (int.TryParse(Console.ReadLine(), out int removeId))
-                        {
-                            var toRemove = hub.Subscribers.FirstOrDefault(s => s.Id == removeId);
-                            if (toRemove != null)
-                                hub.Unsubscribe(toRemove);
-                        }
+                        RemoveSubscriberMenu(hub);
                         break;
 
                     case "3":
-                        Console.WriteLine("=== Subscribers ===");
-                        foreach (var sub in hub.Subscribers)
-                        {
-                            Console.WriteLine($"{sub.Id}: {sub.Name} - {string.Join(",", sub.SubscriptionPreferences)}");
-                        }
+                        ListSubscribersMenu(hub);
                         break;
 
                     case "4":
-                        Console.Write("Enter Notification Message: ");
-                        var msg = Console.ReadLine();
-                        var systemNotification = new NotificationEventArgs(GenerateId(), Constants.SystemType, "System Update", msg);
-                        await hub.PublishNotification(systemNotification);
+                        await PublishSystemNotificationMenu(hub);
                         break;
 
                     case "5":
-                        Console.Write("Enter Marketing Campaign Message: ");
-                        var marketingMsg = Console.ReadLine();
-                        marketingPublisher.LaunchCampaign(GenerateId(), Constants.MarketingType, "Campaign", marketingMsg);
+                        LaunchMarketingCampaignMenu(marketingPublisher);
                         break;
 
                     case "6":
@@ -83,7 +62,7 @@ namespace SmartHub_NotificatioSystem
                         break;
 
                     default:
-                        Console.WriteLine("Invalid choice!");
+                        Console.WriteLine("Invalid choice! Try again.");
                         break;
                 }
             }
@@ -91,7 +70,82 @@ namespace SmartHub_NotificatioSystem
             Console.WriteLine("Exiting Smart Notifications Hub. Goodbye!");
         }
 
+        // ID generator
         static int currentId = 1;
         static int GenerateId() => currentId++;
+
+        // Menu Methods
+        static void AddSubscriberMenu(NotificationHub hub)
+        {
+            Console.Write("Enter Name: ");
+            var name = Console.ReadLine();
+
+            Console.Write("Enter Description: ");
+            var desc = Console.ReadLine();
+
+            Console.Write("Enter Details: ");
+            var details = Console.ReadLine();
+
+            Console.Write("Enter Subscription Types (comma separated, e.g., System,Marketing): ");
+            var types = Console.ReadLine()?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            var subscriber = new Subscriber(GenerateId(), name, desc, details, new List<string>(types ?? Array.Empty<string>()));
+
+            hub.Subscribe(subscriber);
+        }
+
+        static void RemoveSubscriberMenu(NotificationHub hub)
+        {
+            Console.Write("Enter Subscriber ID to remove: ");
+            if (int.TryParse(Console.ReadLine(), out int removeId))
+            {
+                var toRemove = hub.subscribers.FirstOrDefault(s => s.Id == removeId);
+                if (toRemove != null)
+                {
+                    hub.Unscribe(toRemove);
+                }
+                else
+                {
+                    Console.WriteLine("Subscriber not found!");
+                }
+            }
+        }
+
+        static void ListSubscribersMenu(NotificationHub hub)
+        {
+            Console.WriteLine("=== Subscribers ===");
+            foreach (var sub in hub.subscribers)
+            {
+                Console.WriteLine($"{sub.Id}: {sub.Name} - {string.Join(",", sub.SubscriptionPreferences)}");
+            }
+        }
+
+        static async Task PublishSystemNotificationMenu(NotificationHub hub)
+        {
+            Console.Write("Enter Notification Message: ");
+            var msg = Console.ReadLine();
+
+            var systemNotification = new NotificationEventArgs(
+                GenerateId(),
+                Constants.SystemType,
+                "System Update",
+                msg
+            );
+
+            await hub.PublishNotification(systemNotification);
+        }
+
+        static void LaunchMarketingCampaignMenu(MarketingPublisher marketingPublisher)
+        {
+            Console.Write("Enter Marketing Campaign Message: ");
+            var msg = Console.ReadLine();
+
+            marketingPublisher.LaunchCampaign(
+                GenerateId(),
+                Constants.MarketingType,
+                "Campaign",
+                msg
+            );
+        }
     }
 }
