@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartHub_NotificatioSystem.Utilities
 {
-    internal class Constants
+    public static class Constants
     {
+        public const String MarketingType = "Marketing";
+        public const string SytemType = "System";
+        public const String DefaultMessage = "No message Provided";
     }
 }
