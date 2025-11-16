@@ -1,50 +1,50 @@
 ﻿using SmartHub_NotificatioSystem.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartHub_NotificatioSystem.Publishers
 {
     public class MarketingPublisher : Publisher
     {
-        public MarketingPublisher(string id, string name, string description) : base(id, name, description)
-        {
-
-        }
-
-        //Needs one event - Marketing Campaign Launched
+        // Event fired when a marketing campaign is launched
         public event EventHandler<NotificationEventArgs> MarketingCampaignLaunched;
 
-        //Launch Campaign Required
-        public void LaunchCampaign(int notificationId, string notificationType, string notificationDescription, string notificatinoMessage)
+        public MarketingPublisher(string id, string name, string description)
+            : base(id, name, description)
         {
-            if (notificationId == 0)
+        }
+
+        // Launch a marketing campaign + trigger event
+        public void LaunchCampaign(
+            int notificationId,
+            string notificationType,
+            string notificationDescription,
+            string notificationMessage)
+        {
+            if (notificationId <= 0)
             {
-                Console.WriteLine("Invalid Notificatin id.Try again!");
+                Console.WriteLine("[Publisher] Invalid notification ID. Campaign aborted.");
                 return;
             }
 
-            Console.WriteLine($"Launching market campaign: {notificatinoMessage} with Descrption as follows {notificationDescription}");
+            Console.WriteLine(
+                $"[Publisher] Launching Campaign: '{notificationMessage}' | Description: {notificationDescription}");
 
-            //to bundle all the notification details in one package
-            var args = new NotificationEventArgs(
-                       notificationId,
-                       notificationType,
-                       notificationDescription,
-                       notificatinoMessage);
+            // Create notification args
+            var notificationEvent = new NotificationEventArgs(
+                notificationId,
+                notificationMessage,
+                notificationType,
+                notificationDescription
+            );
 
-            onMarketingCampaignLaunched(args);
-
+            // Trigger event safely
+            OnMarketingCampaignLaunched(notificationEvent);
         }
 
-        //Protected method
-        protected virtual void onMarketingCampaignLaunched(NotificationEventArgs e) 
+        // Protected virtual event trigger (allows override)
+        protected virtual void OnMarketingCampaignLaunched(NotificationEventArgs e)
         {
-            //Trigger the MarketingCampaignLaunch
             MarketingCampaignLaunched?.Invoke(this, e);
         }
-
     }
 }
